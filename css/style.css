@@ -1,0 +1,111 @@
+
+@font-face {
+  font-family: 'RSU';
+  src: url('../fonts/RSU.eot?#iefix') format('embedded-opentype'),  url('../fonts/RSU.woff') format('woff'), url('../fonts/RSU.ttf')  format('truetype'), url('../fonts/RSU.svg#RSU') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.ui-header.ui-bar-inherit {
+	background-color: #fff;
+	background-image: url('../images/header.png');
+	background-size: cover;
+	border: 0px;
+}
+.ui-header h1.ui-title {
+	padding-top: 5px;
+}
+h1.ui-title img {
+	width: 45%;
+}
+
+.ui-page  {
+	background-image: url('../images/bg.jpg');
+	background-size: cover;
+}
+
+.ui-panel-wrapper {
+	background-color: transparent !important;
+}
+
+.ui-footer.ui-bar-inherit {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	background-image: url('../images/footer.jpg');
+	background-size: cover;
+	border-color: transparent;
+}
+
+.ui-footer h4 {
+	color: #fff;
+	text-shadow: 0px 0px;
+}
+
+a.bb.ui-btn-icon-notext.ui-btn-left { top: 20%; }
+.ui-overlay-a, .ui-page-theme-a, .ui-page-theme-a .ui-panel-wrapper { text-shadow: 0px 0px 0px; }
+.ui-tabs { padding: 0px; }
+
+.ui-page-theme-a .ui-btn.ui-btn-active {
+	background-color: transparent;
+	color: #fff;
+	border-color: transparent;
+	box-shadow: 0px 0px 0px;
+	border-bottom: 0px solid #000;
+}
+
+.ui-page-theme-a .ui-btn, html .ui-bar-a .ui-btn, html .ui-body-a .ui-btn, html body .ui-group-theme-a .ui-btn, html head+body .ui-btn.ui-btn-a, .ui-page-theme-a .ui-btn:visited, html .ui-bar-a .ui-btn:visited, html .ui-body-a .ui-btn:visited, html body .ui-group-theme-a .ui-btn:visited, html head+body .ui-btn.ui-btn-a:visited {
+	    background-color: transparent;
+    border-color: transparent;
+    color: #fff;
+    text-shadow: 0 0 0;
+    border-bottom: 0px solid #fff;
+	}
+
+.box {
+	width: 100%;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    background: rgba(239, 239, 239, 0.62);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.body {
+	background: rgba(255, 255, 255, 0.58);
+	padding: 20px;
+}
+
+
+
+.box .body h1, .box .body h2 {
+	margin: 0px;
+	padding: 0px;
+	font-size: 1.4em;
+	color: blue;
+	color: #000;
+	font-weight: 500;
+	font-family: 'RSU'
+}
+
+.box .body h2 {
+	font-size: 1.2em;
+	margin-top: 10px;
+}
+.box-footer {
+	padding: 20px; 
+}
+
+.box-footer p{ 
+	margin: 0px;
+	padding: 0px;
+	font-size: 15px;
+	font-weight: 100;
+	font-family: 'RSU';
+}
+
+a { font-family: 'RSU' }
+.bgimg {
+	    background: rgba(255, 255, 255, 0.9);
+
+}
