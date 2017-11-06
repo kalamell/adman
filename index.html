@@ -64,7 +64,7 @@
 			$("#three").html('');
 			snapshot.forEach(function(data) {
 				var html = '';
-				  html +='<div class="box" data-key="' + data.key +'"><div class="body">';
+				  html +='<div class="box" id="k-' + data.key +'"><div class="body">';
 				  html +='<h1>' + data.val().title + '</h1>';
 				  if (data.val().speaker !== '') {
 				  	html +='<h2>' + data.val().speaker + '</h2>';
@@ -78,7 +78,12 @@
 			      $("#three").append(html);
 			});
 
-		})
+		});
+
+		Ref.on('child_removed', function(data) {
+			var key = data.key();
+			$("#k-" + key).remove();
+		});
 
 
 

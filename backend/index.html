@@ -89,6 +89,21 @@
     		getAgenda();
     		$("tr.xx").remove();
     	})
+
+
+    	$(document).on('click', 'tr.ag', function() {
+    		var conf = confirm('ต้องการลบหรือไม่ ?');
+
+    		if (conf) {
+				var key = $(this).data('key');
+
+				var ref = firebase.database().ref('agendas/'+key);
+
+
+				ref.remove();
+				top.location.reload();
+			}
+		})
     </script>
   </body>
 </html>

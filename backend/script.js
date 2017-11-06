@@ -26,9 +26,10 @@ firebase.initializeApp(config);
 
     var ref = firebase.database().ref('agendas');
     ref.orderByChild('position').on('value', function(snapshot) {
+      $("#data-sym3").html('');
       snapshot.forEach(function(data) {
         var val = data.val();
-        var html = '<tr>';
+        var html = '<tr class="ag" data-key="' + data.key + '">';
         html +='<td>' + val.title + '<br>';
         if (val.speaker !== '') {
           html += 'ผู้พูด <span>' + val.speaker + '</span>';
