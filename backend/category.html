@@ -50,7 +50,8 @@
 
 			<ul class="nav nav-tabs" role="tablist">
 			  <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Category</a></li>
-			  <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Sub Category</a></li>
+				<li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Sub Category</a></li>
+				<li role="presentation"><a href="#product" aria-controls="profile" role="tab" data-toggle="tab">Product</a></li>
 			</ul>
 
 
@@ -122,6 +123,61 @@
 					</table>
 
 				</div>
+
+				<div role="tabpanel" class="tab-pane" id="product">
+						<div class='row'>
+							<div class='col-md-6'>
+									<form class="" method="post" id="addproduct">
+											<div class="form-group">
+													<label class="" for="exampleInputEmail3">CAT ID</label>
+													<select class="form-control" id="cat_id_2" name="cat_id_2">					    	
+													</select>
+						
+												</div>
+					
+												
+											<div class="form-group">
+												<label class="" for="exampleInputEmail3">SUB ID</label>
+												<select class="form-control" id="sub_id" name="sub_id_2">					    	
+												</select>
+					
+											</div>
+					
+											<div class="form-group">
+												<label class="" for="exampleInputEmail3">PROID</label>
+												<input type="text" class="form-control" name="p_id">
+											</div>
+
+										
+											<div class="form-group">
+												<label class="" for="exampleInputPassword3">Title</label>
+												<input type="text" class="form-control" name="title">
+											</div>
+			
+											<div class="form-group">
+													<label class="" for="exampleInputPassword3">Brnads / Service</label>
+													<input type="text" class="form-control" name="brand">
+												</div>
+			
+												<div class="form-group">
+													<label class="" for="exampleInputEmail3">AGENCY</label>
+													<select class="form-control" id="agency_id" name="agency_id">					    	
+													</select>
+												</div>
+			
+											<button type="submit" class="btn btn-default">ADD</button>
+										</form>
+					
+			
+							</div>
+
+							<div class='col-md-6'>
+									
+								</div>
+								
+						</div>
+					
+				</div>
 			</div>
 
 
@@ -138,6 +194,24 @@
     <script type="text/javascript" src="script.js"></script>
     <script type="text/javascript">
     	$(function() {
+
+				$("#cat_id_2").on('change', function() {
+					var key = $(this).val();
+					var Ref2 = firebase.database().ref('joinsubcat/' + key);
+					$("#sub_id").html('');
+					$("#sub_id").append("<option value=''>เลือกประเภทย่อย</option>");
+					Ref2.on('value', function(snapshot) {
+							snapshot.forEach(function(data) {
+									var subcat = firebase.database().ref('subcategories/' + data.val().s_cat_id).once('value', function(res) {
+										var option = '<option value="' + res.key + '">' + res.val().sname + '</option>';
+										$("#sub_id").append(option);
+										
+									})
+							});
+					});
+
+					
+				});
     		$("#addcategory").on('submit', function(e) {
     			e.preventDefault();
 
@@ -151,15 +225,57 @@
 
     		$("#addsub").on('submit', function(e) {
     			e.preventDefault();
-    			var id = $('input[name=s_cat_id]').val();
+					var id = $('input[name=s_cat_id]').val();
+					var cat_id = $("#cat_id").val();
     			firebase.database().ref("subcategories").update({[id] : { 
-    				cat_id: $("#cat_id").val(),
+    				cat_id: cat_id,
     				sname: $('input[name=s_cat_name]').val()
-    			}});
+					}});
 
-    			
+					
+					/*firebase.database().ref("joinsubcat").update({[cat_id] : [{ 
+    				s_cat_id: id,
+    				sname: $('input[name=s_cat_name]').val()
+					}]});
+					*/
+					firebase.database().ref("joinsubcat/" + cat_id).push({
+						s_cat_id: id,
+					})
+				});
+				
+				$("#addproduct").on('submit', function(e) {
+					e.preventDefault();
+					var pro_id = $("input[name=p_id]").val();
+					var code = $("input[name=code]").val();
+					var cat_id = $("#cat_id_2").val();
+					var sub_id_2 = $("#sub_id").val();
+					var title = $("input[name=title]").val();
+					var brand = $("input[name=brand]").val();
+					var agency_id = $("#agency_id").val();
 
-    		});
+					firebase.database().ref("product").update({[pro_id] : { 
+						code: pro_id,
+						cat_id: cat_id,
+						sub_id: sub_id_2,
+						title: title,
+						brand: brand,
+						agency_id: agency_id,
+						price: 'finalize',
+						price_order: 99
+					}});
+
+					firebase.database().ref("agencyproduct/" + agency_id).push({
+						product_id: pro_id,
+					})
+
+					firebase.database().ref("subcatproduct/" + sub_id_2).push({
+						product_id: pro_id,
+					});
+
+					alert('บันทึกเรียบร้อย');
+					$("input[type=text]").val('');
+
+				});
     		
     	})
 
@@ -171,12 +287,16 @@
 	      $("#data").append(html);
 	    }
 
-    	var Ref = firebase.database().ref('categories');
-		Ref.on('child_added', function(data) {
-		  addElement(data.key, data.val().name);
-		  var option = '<option value="' + data.key + '">' + data.val().name + '</option>';
-		  $("#cat_id").append(option);
-		});
+			var Ref = firebase.database().ref('categories');
+			$("#cat_id").append("<option value=''>เลือกประเภท</option>");
+				$("#cat_id_2").append("<option value=''>เลือกประเภท</option>");
+
+			Ref.on('child_added', function(data) {
+				addElement(data.key, data.val().name);
+				var option = '<option value="' + data.key + '">' + data.val().name + '</option>';
+				$("#cat_id").append(option);
+				$("#cat_id_2").append(option);
+			});
 
 
 		var Ref = firebase.database().ref('subcategories');
@@ -188,8 +308,13 @@
 		      	html +='<td>' + data.val().sname + '</td>';
 		      	html +='<td>' + s.val().name + '</td>';
 		      	html +='</tr>';
-		      	$("#data2").append(html);
-			})
+						$("#data2").append(html);
+						
+						/*firebase.database().ref("joinsubcat/" + data.val().cat_id).push({
+							s_cat_id: data.key,
+						})*/
+
+			});
 			
 			/*
 		  	var html = '<tr>';
@@ -199,6 +324,19 @@
 	      	$("#data").append(html);
 	      	*/
 		});
+
+		var RefAg = firebase.database().ref('agency');
+		$("#agency_id").html('<option value=""> เลือก Agency </option>');
+		RefAg.on('value', function(snapshot) {
+			snapshot.forEach(function(data) {
+				var a_id = data.val().a_id, a_name = data.val().a_name;
+				var option = '<option value="'+ a_id +'">'+ a_name +'</option>';
+	      
+	      $("#agency_id").append(option);
+			});
+
+		})
+
 
 		function getCat() {
 
