@@ -8,7 +8,7 @@
 	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<script src="jmobile/jquery.mobile-1.4.5.js"></script>
-	<link rel="stylesheet" type="text/css" href="css/style.css?v=999">
+	<link rel="stylesheet" type="text/css" href="css/style.css?v=ezee">
 	<script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
 	<script type="text/javascript" src="script.js"></script>
 </head>
@@ -60,7 +60,7 @@
 		var Ref = firebase.database().ref('agendas');
 		
 		
-		Ref.on('value', function(snapshot) {
+		Ref.orderByChild('position').on('value', function(snapshot) {
 			$("#three").html('');
 			snapshot.forEach(function(data) {
 				var html = '';
@@ -77,6 +77,16 @@
 			      html +='</div></div>';
 			      $("#three").append(html);
 			});
+
+			html = '';
+			html +='<div class="box"><div class="body">';
+			html +='<h1>Best of Print/Out of Home</h1>';
+			html +='</div>';
+			html +='<div class="box-footer">';
+		    html += '</div>';
+		    html +='</div></div>';
+		    $("#three").append(html);
+			//$("#three").prepend(html);
 
 		});
 

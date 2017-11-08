@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Adman</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+  	<nav class="navbar navbar-default">
+	  <div class="container-fluid">
+	    <!-- Brand and toggle get grouped for better mobile display -->
+	    <div class="navbar-header">
+	      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+	        <span class="sr-only">Toggle navigation</span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	      </button>
+	      <a class="navbar-brand" href="#">ADMAN 2017</a>
+	    </div>
+
+	    <!-- Collect the nav links, forms, and other content for toggling -->
+	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+	      	      
+	      <ul class="nav navbar-nav navbar-right">
+	        <li><a href="index.html">AGENDA</a></li>
+	        <li><a href="category.html">CATEGORY</a></li>
+	        <li><a href="agency.html">AGENCY</a></li>
+	         <li><a href="product.html">PRODUCT</a></li>
+	        
+	      </ul>
+	    </div><!-- /.navbar-collapse -->
+	  </div><!-- /.container-fluid -->
+	</nav>
+
+	<div class="container">
+
+		<div class='row'>
+			<div class='col-md-12'>
+					<form class="form-inline" method="post" id="addproduct">
+						<div class="form-group">
+								<label class="" for="exampleInputEmail3">CAT ID</label>
+								<select class="form-control" id="cat_id_2" name="cat_id_2">					    	
+								</select>
+
+							</div>
+
+							
+						<div class="form-group">
+							<label class="" for="exampleInputEmail3">SUB ID</label>
+							<select class="form-control" id="sub_id" name="sub_id_2">					    	
+							</select>
+
+						</div>
+
+						
+					</form>
+
+
+			</div>
+
+			<div class='col-md-12'>
+				<table class="table table-bordered tabl-striped">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>TITLE</th>
+							<th>Brand</th>
+							<th>Agency</th>
+							<th>&nbsp;</th>
+						</tr>
+					</thead>
+					<tbody id="result">
+						
+					</tbody>
+				</table>
+					
+			</div>
+				
+		</div>
+		
+	</div>
+    
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="script.js"></script>
+    <script type="text/javascript">
+    	$(function() {
+
+			$("#cat_id_2").on('change', function() {
+				var key = $(this).val();
+				var Ref2 = firebase.database().ref('joinsubcat/' + key);
+				$("#sub_id").html('');
+				$("#sub_id").append("<option value=''>เลือกประเภทย่อย</option>");
+				Ref2.on('value', function(snapshot) {
+						snapshot.forEach(function(data) {
+								var subcat = firebase.database().ref('subcategories/' + data.val().s_cat_id).once('value', function(res) {
+									var option = '<option value="' + res.key + '">' + res.val().sname + '</option>';
+									$("#sub_id").append(option);
+									
+								})
+						});
+				});
+
+				
+			});
+
+			$("#sub_id").on('change', function() {
+				var key = $(this).val();
+				var Ref2 = firebase.database().ref('subcatproduct/' + key);
+
+				$("#result").html('');
+
+				Ref2.orderByKey().on('value', function(snapshot) {
+					snapshot.forEach(function(data) {
+						
+
+						var subcat = firebase.database().ref('product/' + data.val().product_id).once('value', function(res) {
+							var html = '';
+							html +='<tr>';
+							html +='<td>' + res.val().code +'</td>';
+							html +='<td>' + res.val().title + '</td>';
+							html +='<td>' + res.val().brand + '</td>';
+
+							var val = 'agency/' + res.val().agency_id;
+							var aj = firebase.database().ref(val).once('value', function(res2) {
+								
+								var q = res2.val().a_name;
+
+								$("td.show_" + res.key).text(q);
+								
+							});
+							html +='<td class="show_' + res.key + '">&nbsp;</td>';
+							html +='<td>' + res.val().price + '</td>';
+							html +='</tr>';
+							$("#result").append(html);
+							
+						})
+					});
+				});
+
+			})
+    		
+    	})
+
+    	function addElement(key, cat_name) {
+    	  var html = '<tr>';
+	      html +='<td>' + key + '</td>';
+	      html +='<td>' + cat_name + '</td>';
+	      html +='</tr>';
+	      $("#data").append(html);
+	    }
+
+		var Ref = firebase.database().ref('categories');
+		$("#cat_id").append("<option value=''>เลือกประเภท</option>");
+			$("#cat_id_2").append("<option value=''>เลือกประเภท</option>");
+
+		Ref.on('child_added', function(data) {
+			addElement(data.key, data.val().name);
+			var option = '<option value="' + data.key + '">' + data.val().name + '</option>';
+			$("#cat_id").append(option);
+			$("#cat_id_2").append(option);
+		});
+
+
+		var Ref = firebase.database().ref('subcategories');
+		Ref.orderByKey().on('child_added', function(data) {
+			var cat = firebase.database().ref('categories').child(data.val().cat_id);
+			cat.once('value', function(s) {
+				var html = '<tr>';
+		      	html +='<td>' + data.key + '</td>';
+		      	html +='<td>' + data.val().sname + '</td>';
+		      	html +='<td>' + s.val().name + '</td>';
+		      	html +='</tr>';
+						$("#data2").append(html);
+						
+				
+
+			});
+			
+			
+		});
+
+
+
+    </script>
+  </body>
+</html>

@@ -38,6 +38,7 @@
 	        <li><a href="index.html">AGENDA</a></li>
 	        <li><a href="category.html">CATEGORY</a></li>
 	        <li><a href="agency.html">AGENCY</a></li>
+	         <li><a href="product.html">PRODUCT</a></li>
 	        
 	      </ul>
 	    </div><!-- /.navbar-collapse -->
@@ -95,20 +96,18 @@
     	$(function() {
     		$("#addcategory").on('submit', function(e) {
     			e.preventDefault();
+    			var a_id = $("input[name=a_id]").val();
+    			firebase.database().ref("agency").update({[a_id] : { a_name: $('input[name=a_name]').val()}});
 
-    			firebase.database().ref('agency').push({
-				    a_id: $("input[name=a_id]").val(),
-				    a_name: $("input[name=a_name]").val(),
-				  });
-
+    			
     			$("input[type=text]").val('');
 
     		});
     	})
 
-    	function addElement(key, a_id, a_name) {
+    	function addElement(key,  a_name) {
     	  var html = '<tr>';
-	      html +='<td>' + a_id + '</td>';
+	      html +='<td>' + key + '</td>';
 	      html +='<td>' + a_name + '</td>';
 	      html +='</tr>';
 	      $("#data").append(html);
@@ -116,7 +115,8 @@
 
     	var Ref = firebase.database().ref('agency');
 		Ref.on('child_added', function(data) {
-		  addElement(data.key, data.val().a_id, data.val().a_name);
+		  //addElement(data.key, data.val().a_id, data.val().a_name);
+		   addElement(data.key,  data.val().a_name);
 		});
 
 		Ref.on('value', function(snapshot) {

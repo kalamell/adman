@@ -8,7 +8,7 @@
 	<script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<script src="jmobile/jquery.mobile-1.4.5.js"></script>
-	<link rel="stylesheet" type="text/css" href="css/style.css?v=999">
+	<link rel="stylesheet" type="text/css" href="css/style.css?v=svev">
 	<script type="text/javascript" src="script.js"></script>
 </head>
 
@@ -169,27 +169,10 @@
         $(document).on('click', 'a.cat', function() {
             var key = $(this).data('key');
 
-           // $("a#mtitle").html($(this).data('name'));
-
-            /*var Ref2 = firebase.database().ref('subcategories');
-		
-		
-            Ref2.on('value', function(snapshot) {
-                
-                snapshot.forEach(function(data) {
-                    if (data.val().cat_id == key ) {
-                        var html = '';
-                        html +='<a href="#home3" class="scat" data-key="' + data.key + '" style="text-decoration: none"><div class="box" id="k-' + data.key +'"><div class="body">';
-                        html +='<h1>' + data.val().sname + '</h1>';
-                        
-                        html +='</div>';
-                        html +='</div></div></a>';
-                        $("#three2").append(html);
-                    }
-                })
-            });*/
+          
 
             var Ref2 = firebase.database().ref('joinsubcat/' + key);
+            $("#three2").html('');
             Ref2.on('value', function(snapshot) {
                 snapshot.forEach(function(data) {
                     var subcat = firebase.database().ref('subcategories/' + data.val().s_cat_id).once('value', function(res) {
@@ -212,26 +195,65 @@
         $(document).on('click', 'a.scat', function() {
             var key = $(this).data('key');
 
-           
+           	 $("#three3").html('');
 
-            var RefProduct = firebase.database().ref('subcatproduct/' + key);
-            RefProduct.on('value', function(snapshot) {
-                snapshot.forEach(function(data) {
-                    var subcat = firebase.database().ref('product/' + data.val().product_id).orderByKey().once('value', function(res) {
-                        var html = '';
-                        html +='<a href="#home" class="sproduct" data-key="' + res.key + '" data-name="' + res.val().title + '" style="text-decoration: none"><div class="box" id="k-' + res.key +'"><div class="body">';
-                        html +='<h1>' + res.val().title + '</h1>';
-                        
-                        html +='</div>';
-                        html +='</div></div></a>';
-                        $("#three3").append(html);
+           	var RefPro = firebase.database().ref('subcatproduct/' + key);
 
-                    })
-                });
-            });
+            RefPro.orderByChild('product_id').on('value', function(snapshot) {
+				snapshot.forEach(function(data) {
+					console.log(data.val().annouce);
+
+					var subcat = firebase.database().ref('product/' + data.val().product_id).once('value', function(res) {
+						var html = '';
+						var val = 'agency/' + res.val().agency_id;
+
+
+						html +='<div class="box"><div class="body">';
+
+						var aj_name = '';
+
+
+
+						var aj = firebase.database().ref('agency/' + res.val().agency_id).once('value', function(res2) {
+
+
+							aj_name = res2.val().a_name;
+
+							$("p.aj_name_" + res.key).html(' AGENCY : ' + aj_name);
+
+
+							
+						});
+
+						
+
+						if (data.val().annouce !==0) {	
+							if (res.val().price !=='FINALIST') {
+								html += '<label class="label-' + res.val().price +'">' + res.val().price + '</label>';
+							}
+						}
+
+
+						
+						html +='<img src="images/admin-logo.png" />';
+						html +='<h1>' + res.val().code +'</h1>';
+						html +='<h1>' + res.val().title + '</h1></div>';
+						html +='<div class="box-footer">';
+						html +='<p> BRAND : ' + res.val().brand + '</p>';
+						html +='<p class="aj_name_' + res.key +'"> AGENCY : ' + aj_name + '</p>';
+						html +='</div>';
+						html +='</div>';
+						$("#three3").append(html);
+						
+					})
+				});
+			});
 
 
         });
+
+
+
 
 
 

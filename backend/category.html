@@ -38,6 +38,7 @@
 	        <li><a href="index.html">AGENDA</a></li>
 	        <li><a href="category.html">CATEGORY</a></li>
 	        <li><a href="agency.html">AGENCY</a></li>
+	         <li><a href="product.html">PRODUCT</a></li>
 	        
 	      </ul>
 	    </div><!-- /.navbar-collapse -->
@@ -148,6 +149,8 @@
 												<input type="text" class="form-control" name="p_id">
 											</div>
 
+
+										
 										
 											<div class="form-group">
 												<label class="" for="exampleInputPassword3">Title</label>
@@ -164,6 +167,19 @@
 													<select class="form-control" id="agency_id" name="agency_id">					    	
 													</select>
 												</div>
+
+
+												<div class="form-group">
+												<label class="" for="exampleInputEmail3">AWARD</label>
+												<select class="form-control" id="award" name="award">
+													<option value="0">BEST</option>		
+													<option value="1">GOLD</option>					    	
+													<option value="2">SILVER</option>
+													<option value="3">BRONZE</option>
+													<option value="99">FINALIST</option>
+												</select>
+					
+											</div>
 			
 											<button type="submit" class="btn btn-default">ADD</button>
 										</form>
@@ -212,6 +228,8 @@
 
 					
 				});
+
+
     		$("#addcategory").on('submit', function(e) {
     			e.preventDefault();
 
@@ -227,9 +245,9 @@
     			e.preventDefault();
 					var id = $('input[name=s_cat_id]').val();
 					var cat_id = $("#cat_id").val();
-    			firebase.database().ref("subcategories").update({[id] : { 
-    				cat_id: cat_id,
-    				sname: $('input[name=s_cat_name]').val()
+    				firebase.database().ref("subcategories").update({[id] : { 
+	    				cat_id: cat_id,
+	    				sname: $('input[name=s_cat_name]').val()
 					}});
 
 					
@@ -238,40 +256,71 @@
     				sname: $('input[name=s_cat_name]').val()
 					}]});
 					*/
+
+					/*
 					firebase.database().ref("joinsubcat/" + cat_id).push({
 						s_cat_id: id,
-					})
+					})*/
+
+					firebase.database().ref("joinsubcat").child(data.val().cat_id).push({s_cat_id: data.key});
+
 				});
 				
 				$("#addproduct").on('submit', function(e) {
 					e.preventDefault();
-					var pro_id = $("input[name=p_id]").val();
-					var code = $("input[name=code]").val();
 					var cat_id = $("#cat_id_2").val();
 					var sub_id_2 = $("#sub_id").val();
+
+					var pro_id = sub_id_2 + "" + $("input[name=p_id]").val();
+					var code = sub_id_2 + "/" + $("input[name=p_id]").val();
+					
 					var title = $("input[name=title]").val();
 					var brand = $("input[name=brand]").val();
 					var agency_id = $("#agency_id").val();
+/*
+<option value="1">GOLD</option>					    	
+													<option value="2">SILVER</option>
+													<option value="3">BRONZE</option>
+													<option value="99">FINALIST</option>
+													*/
+					var price = 'FINALIST';
+					var price_order = $("#award").val();
+
+					if (price_order ==0) {
+						price = 'BEST';
+					}
+
+					if (price_order ==1) {
+						price = 'GOLD';
+					}
+
+					if (price_order ==2) {
+						price = 'SILVER';
+					}
+
+					if (price_order ==3) {
+						price = 'BRONZE';
+					}
+
 
 					firebase.database().ref("product").update({[pro_id] : { 
-						code: pro_id,
+						code: code,
 						cat_id: cat_id,
 						sub_id: sub_id_2,
 						title: title,
 						brand: brand,
 						agency_id: agency_id,
-						price: 'finalize',
-						price_order: 99
+						price: price,
+						price_order: price_order
 					}});
 
-					firebase.database().ref("agencyproduct/" + agency_id).push({
-						product_id: pro_id,
-					})
+					
 
-					firebase.database().ref("subcatproduct/" + sub_id_2).push({
-						product_id: pro_id,
-					});
+					firebase.database().ref("agencyproduct").child(agency_id).push({ 'product_id': pro_id});
 
+					firebase.database().ref("subcatproduct").child(sub_id_2).push({ 'product_id': pro_id});
+
+	
 					alert('บันทึกเรียบร้อย');
 					$("input[type=text]").val('');
 
@@ -307,12 +356,24 @@
 		      	html +='<td>' + data.key + '</td>';
 		      	html +='<td>' + data.val().sname + '</td>';
 		      	html +='<td>' + s.val().name + '</td>';
+		      	html +='<td><button class="btn btn-sm btn-default open" data-key="' + data.key + '">เปิดรางวัล</button></td>';
 		      	html +='</tr>';
 						$("#data2").append(html);
 						
-						/*firebase.database().ref("joinsubcat/" + data.val().cat_id).push({
-							s_cat_id: data.key,
-						})*/
+						/*
+				firebase.database().ref("joinsubcat/" + data.val().cat_id).push({
+					s_cat_id: data.key,
+				})
+				*/
+				/*
+				firebase.database().ref("joinsubcat/" + data.val().cat_id).push([data.key]);
+				*/
+				/*
+				firebase.database().ref("joinsubcat").child(data.val().cat_id)
+				.push({
+					s_cat_id: data.key
+				})*/
+
 
 			});
 			
@@ -330,10 +391,24 @@
 		RefAg.on('value', function(snapshot) {
 			snapshot.forEach(function(data) {
 				var a_id = data.val().a_id, a_name = data.val().a_name;
-				var option = '<option value="'+ a_id +'">'+ a_name +'</option>';
+				var option = '<option value="'+ data.key +'">'+ a_name +'</option>';
 	      
 	      $("#agency_id").append(option);
 			});
+
+		})
+
+		$(document).on('click', 'button.open', function() {
+			var key = $(this).data('key');
+			console.log(key);
+
+			firebase.database().ref("subcatproduct").child(key).on('value', function(snapshot) {
+		      	snapshot.forEach(function(data) {
+		      		console.log(data.key);
+		      	});
+
+		      })
+
 
 		})
 
@@ -352,7 +427,28 @@
 		      });
 		    })*/
 	      }
+/*
 
+	      firebase.database().ref("subcatproduct").on('value', function(snapshot) {
+	      	snapshot.forEach(function(data) {
+	      		firebase.database().ref("subcatproduct").child(data.key).on('value', function(rs) {
+	      			rs.forEach(function(data2) {
+	      				firebase.database().ref("subcatproduct").child(data.key).child(data2.key).update({ annouce: 0 });
+	      				//console.log(' <<< ', data2.key);
+	      			});
+
+	      		});
+	      	});
+
+	      })
+	      */
+
+	      /*
+	      -KyP6LT3_ci6F4JBic6o
+ product_id: 
+"ATW01010"
+
+*/
 
     </script>
   </body>
