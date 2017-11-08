@@ -200,9 +200,10 @@
         $(document).on('click', 'a.scat', function() {
             var key = $(this).data('key');
 
-           	 $("#three3").html('<div class="box"><div class="body"><h1>ยังไม่มีการประกาศรางวัลในขณะนี้</h1></div></div>');
+           	 $("#three3").html('<div class="bb box"><div class="body"><h1>ยังไม่มีการประกาศรางวัลในขณะนี้</h1></div></div>');
 
            	var RefPro = firebase.database().ref('subcatproduct/' + key);
+               $i = 0;
 
             RefPro.orderByKey().on('value', function(snapshot) {
 				snapshot.forEach(function(data) {
@@ -246,6 +247,7 @@
                             html +='</div>';
                             html +='</div>';
                             $("#three3").append(html);
+                            $i++;
 						
 						} 
 
@@ -254,6 +256,10 @@
 						
 					})
 				});
+
+                if ($i>0) {
+                    $(".bb").remove();
+                }
 			});
 
 

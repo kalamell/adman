@@ -356,7 +356,7 @@
 		      	html +='<td>' + data.key + '</td>';
 		      	html +='<td>' + data.val().sname + '</td>';
 		      	html +='<td>' + s.val().name + '</td>';
-		      	html +='<td><button class="btn btn-sm btn-default open" data-key="' + data.key + '">เปิดรางวัล</button></td>';
+		      	html +='<td><div class="btn-group"><button class="btn btn-sm btn-default open" data-key="' + data.key + '">OPEN</button><button class="btn btn-sm btn-default cls" data-key="' + data.key + '">OFF</button></td>';
 		      	html +='</tr>';
 						$("#data2").append(html);
 						
@@ -400,17 +400,41 @@
 
 		$(document).on('click', 'button.open', function() {
 			var key = $(this).data('key');
-			console.log(key);
+			
 
 			firebase.database().ref("subcatproduct").child(key).on('value', function(snapshot) {
 		      	snapshot.forEach(function(data) {
 		      		console.log(data.key);
+					firebase.database().ref("subcatproduct").child(key).child(data.key).on('value', function(res) {
+						//console.log(res.val());
+					});
+
+					firebase.database().ref("subcatproduct").child(key).child(data.key).update({ 'annouce': 1});
 		      	});
 
 		      })
 
 
 		})
+
+		$(document).on('click', 'button.cls', function() {
+			var key = $(this).data('key');
+			
+			firebase.database().ref("subcatproduct").child(key).on('value', function(snapshot) {
+		      	snapshot.forEach(function(data) {
+		      		console.log(data.key);
+					firebase.database().ref("subcatproduct").child(key).child(data.key).on('value', function(res) {
+						//console.log(res.val());
+					});
+
+					firebase.database().ref("subcatproduct").child(key).child(data.key).update({ 'annouce': 0});
+		      	});
+
+		      })
+
+
+		})
+
 
 
 		function getCat() {
